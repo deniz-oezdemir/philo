@@ -29,13 +29,13 @@ func (p Philo) dine() {
 		p.log("has taken a fork")
 
 		p.log("is eating")
-		time.Sleep(time.Millisecond * time.Duration(p.config.timeEat))
+		preciseSleep(int64(p.config.timeEat))
 
 		p.rightFork.Unlock()
 		p.leftFork.Unlock()
 
 		p.log("is sleeping")
-		time.Sleep(time.Millisecond * time.Duration(p.config.timeSleep))
+		preciseSleep(int64(p.config.timeSleep))
 
 		p.log("is thinking")
 	}
@@ -50,7 +50,7 @@ func main() {
 
 	fmt.Printf("Config: %+v\n", *config)
 
-	//TODO: if 1 philo: pick up fork, wait timeDie, die
+	// TODO: if 1 philo: pick up fork, wait timeDie, die
 
 	forks := make([]*Fork, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
@@ -59,12 +59,14 @@ func main() {
 
 	startTime = time.Now()
 
+	// TODO: add monitor thread to check for end of dinner in case of dead philo or each philo ate numMeals
+
 	philos := make([]*Philo, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
 		philos[i] = &Philo{ id: i + 1, leftFork: forks[i], rightFork: forks[(i + 1) % config.numPhilos], config: config}
 		go philos[i].dine()
-		time.Sleep(time.Microsecond * time.Duration(1))
+		time.Sleep(time.Nanosecond) // delay next philo goroutine shortly to mitigate each philo holding on to its own fork (deadlock)
 	}
 
-	select {} // keep main goroutine alive as otherwise philos' goroutines terminate with main goroutine
+	select {} // keep main goroutine alive as otherwise philos' goroutines terminate with it
 }
