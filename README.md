@@ -16,7 +16,7 @@ This project is my first attempt at using Go. It builds on what I learned from t
 
 The [Dining Philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem) is a classic synchronization problem involving philosophers who alternately eat, think, and sleep. Each philosopher needs two forks to eat, but there are only as many forks as there are philosophers, leading to potential deadlocks and starvation.
 
-![Illustration](./illustration.png)
+<img src="./illustration.png" alt="Illustration" width="50%">
 
 *Illustration by Benjamin D. Esham / Wikimedia Commons, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0), [Link](https://commons.wikimedia.org/w/index.php?curid=56559)*
 
@@ -114,7 +114,7 @@ The execution of the above example results in the following output with the form
 
 This output can be [visualized](https://nafuka11.github.io/philosophers-visualizer/) as below:
 
-![Example visualization](./example.png)
+<img src="./example.png" alt="Example visualization" width="50%">
 
 After each philosopher has eaten three times, the dinner ends and the program stops executing.
 
