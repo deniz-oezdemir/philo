@@ -11,62 +11,120 @@ type Fork struct{ sync.Mutex }
 type Philo struct {
 	id					int
 	leftFork, rightFork	*Fork
-	config				*Config
+	personalTimeDie		time.Time
+	mealsEaten			int
+	satisfied			bool
+	mu					sync.Mutex
 }
 
-var startTime time.Time
+var (
+	config			*Config
+	startTime		time.Time
+	satisfiedPhilos	int
+	dinnerEnd		bool
+	philoDead		bool
+)
 
 func (p Philo) log(action string) {
 	elapsed := time.Since(startTime).Milliseconds()
 	fmt.Printf("%d %d %s\n", elapsed, p.id, action)
 }
 
-func (p Philo) dine() {
+func (p *Philo) dine() {
 	for {
 		p.leftFork.Lock()
 		p.log("has taken a fork")
 		p.rightFork.Lock()
 		p.log("has taken a fork")
 
+		p.mu.Lock()
+		p.personalTimeDie = time.Now().Add(time.Duration(config.timeDie) * time.Millisecond)
+		//fmt.Printf("Philo %d starts eating. personalTimeDie: %v\n", p.id, p.personalTimeDie)
+		p.mealsEaten += 1
+		p.mu.Unlock()
+
 		p.log("is eating")
-		preciseSleep(int64(p.config.timeEat))
+		preciseSleep(int64(config.timeEat))
 
 		p.rightFork.Unlock()
 		p.leftFork.Unlock()
 
 		p.log("is sleeping")
-		preciseSleep(int64(p.config.timeSleep))
+		preciseSleep(int64(config.timeSleep))
 
 		p.log("is thinking")
+		preciseSleep(int64(1)) // prevent bullying with short mandatory thinking time
+	}
+}
+
+func monitor(philos []*Philo) {
+	satisfiedPhilos = 0
+	for !dinnerEnd && !philoDead {
+		for i := 0; i < config.numPhilos; i++ {
+			philos[i].mu.Lock()
+			//fmt.Printf("Checking Philo %d: personalTimeDie: %v, current time: %v\n", philos[i].id, philos[i].personalTimeDie, time.Now())
+			if philos[i].personalTimeDie.Before(time.Now()) {
+				//fmt.Printf("Philo %d personalTimeDie: %v, current time: %v\n", philos[i].id, philos[i].personalTimeDie, time.Now())
+				philoDead = true
+				philos[i].log("died")
+				philos[i].mu.Unlock()
+				return
+			} else {
+				philos[i].mu.Unlock()
+			}
+
+			// check whether individual philosopher is satisfied and if so check whether all philosophers are satisfied
+			philos[i].mu.Lock()
+			if philos[i].mealsEaten == config.numMeals && !philos[i].satisfied {
+				philos[i].satisfied = true
+				philos[i].mu.Unlock()
+				satisfiedPhilos += 1
+				if satisfiedPhilos == config.numPhilos {
+					dinnerEnd = true
+					elapsed := time.Since(startTime).Milliseconds()
+					fmt.Printf("%d all philosophers have eaten %d times\n", elapsed, config.numMeals)
+				}
+			} else {
+				philos[i].mu.Unlock()
+			}
+		}
 	}
 }
 
 func main() {
-	config, err := parseArgs()
+	var err error
+	config, err = parseArgs()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
 	fmt.Printf("Config: %+v\n", *config)
 
-	// TODO: if 1 philo: pick up fork, wait timeDie, die
 
 	forks := make([]*Fork, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
 		forks[i] = new(Fork)
 	}
 
+	dinnerEnd, philoDead = false, false
 	startTime = time.Now()
+	//fmt.Printf("Dinner starts at: %v\n", startTime)
 
-	// TODO: add monitor thread to check for end of dinner in case of dead philo or each philo ate numMeals
 
 	philos := make([]*Philo, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
-		philos[i] = &Philo{ id: i + 1, leftFork: forks[i], rightFork: forks[(i + 1) % config.numPhilos], config: config}
+		philos[i] = &Philo{ id: i + 1,
+			leftFork: forks[i],
+			rightFork: forks[(i + 1) % config.numPhilos],
+			personalTimeDie: startTime.Add(time.Duration(config.timeDie) * time.Millisecond),
+			mealsEaten: 0,
+			satisfied: false}
+		//fmt.Printf("Philo %d initial personalTimeDie: %v\n", philos[i].id, philos[i].personalTimeDie)
 		go philos[i].dine()
-		time.Sleep(time.Nanosecond) // delay next philo goroutine shortly to mitigate each philo holding on to its own fork (deadlock)
+		time.Sleep(time.Millisecond) // delay next philo goroutine shortly to mitigate each philo holding on to its own fork (deadlock)
 	}
 
-	select {} // keep main goroutine alive as otherwise philos' goroutines terminate with it
+	monitor(philos)
+
+	//select {} // keep main goroutine alive without monitor as otherwise philos' goroutines terminate with it
 }
