@@ -114,7 +114,7 @@ The execution of the above example results in the following output with the form
 
 This output can be [visualized](https://nafuka11.github.io/philosophers-visualizer/) as below:
 
-<img src="./example.png" alt="Example visualization" width="50%">
+<img src="./example.png" alt="Example visualization" width="75%">
 
 After each philosopher has eaten three times, the dinner ends and the program stops executing.
 
