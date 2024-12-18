@@ -14,7 +14,7 @@ This project is my first attempt at using Go. It builds on what I learned from t
 
 ## Overview
 
-The [Dining Philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem) is a classic synchronization problem involving philosophers who alternately eat, think, and sleep. Each philosopher needs two forks to eat, but there are only as many forks as there are philosophers, leading to potential deadlocks and starvation.
+The [Dining Philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem) is a classic synchronization problem involving philosophers who alternately eat, think, and sleep. Each philosopher needs two forks to eat, but there are only as many forks as there are philosophers, leading to potential deadlocks and starvation. For the complete specifications of the requirements, please refer to the [subject document](https://github.com/deniz-oezdemir/Philosophers/blob/main/en.subject.pdf).
 
 <img src="./illustration.png" alt="Illustration" width="50%">
 
