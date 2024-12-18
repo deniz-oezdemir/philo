@@ -122,7 +122,7 @@ After each philosopher has eaten three times, the dinner ends and the program st
 ## Comparing Go and C
 - **Memory Management**: Go's garbage collection is more convenient, though it offers less control compared to manual memory management in C.
 - **Concurrency**: Go's goroutines are more convenient and easier to use than threads in C.
-- **Sleep Function**: The standard sleep function in Go (`time.Sleep`) seems to be less precise than the standard `usleep function in C.
+- **Sleep Function**: The sleep function in Go (`time.Sleep`) seems to be less precise than the standard `usleep` function in C.
 - **Code Length**: Go allows for shorter and more concise code.
 - **Overall Experience**: Transitioning from C to Go has been a pleasant experience, and Go is relatively intuitive to pick up.
 
