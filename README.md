@@ -1,6 +1,6 @@
 # Philosophers in Go
 
-This project is my introduction to Go, building on the concepts learned from the [Tour of Go](https://go.dev/tour/welcome/1). It implements the classic Dining Philosophers problem, which I previously [solved in C](https://github.com/deniz-oezdemir/Philosophers), to learn about Go's concurrency model in an applied way.
+This project is my first attempt at using Go. It builds on what I learned from the [Tour of Go](https://go.dev/tour/welcome/1). Here, I solve the Dining Philosophers problem, which I previously [implemented in C](https://github.com/deniz-oezdemir/Philosophers), to explore Go's concurrency features.
 
 ## Table of Contents
 
@@ -15,6 +15,10 @@ This project is my introduction to Go, building on the concepts learned from the
 ## Overview
 
 The [Dining Philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem) is a classic synchronization problem involving philosophers who alternately eat, think, and sleep. Each philosopher needs two forks to eat, but there are only as many forks as there are philosophers, leading to potential deadlocks and starvation.
+
+![Illustration](./illustration.png)
+
+*Illustration by Benjamin D. Esham / Wikimedia Commons, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0), [Link](https://commons.wikimedia.org/w/index.php?curid=56559)*
 
 ## Key Learnings
 
