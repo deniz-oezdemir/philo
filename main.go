@@ -39,7 +39,6 @@ func (p *Philo) dine() {
 
 		p.mu.Lock()
 		p.personalTimeDie = time.Now().Add(time.Duration(config.timeDie) * time.Millisecond)
-		//fmt.Printf("Philo %d starts eating. personalTimeDie: %v\n", p.id, p.personalTimeDie)
 		p.mealsEaten += 1
 		p.mu.Unlock()
 
@@ -53,7 +52,7 @@ func (p *Philo) dine() {
 		preciseSleep(int64(config.timeSleep))
 
 		p.log("is thinking")
-		preciseSleep(int64(1)) // prevent bullying with short mandatory thinking time
+		preciseSleep(int64(1)) // prevent philosophers from taking another philosphers fork who needs to eat more urgently
 	}
 }
 
@@ -61,10 +60,10 @@ func monitor(philos []*Philo) {
 	satisfiedPhilos = 0
 	for !dinnerEnd && !philoDead {
 		for i := 0; i < config.numPhilos; i++ {
+
+			// check whether philosopher is dead
 			philos[i].mu.Lock()
-			//fmt.Printf("Checking Philo %d: personalTimeDie: %v, current time: %v\n", philos[i].id, philos[i].personalTimeDie, time.Now())
 			if philos[i].personalTimeDie.Before(time.Now()) {
-				//fmt.Printf("Philo %d personalTimeDie: %v, current time: %v\n", philos[i].id, philos[i].personalTimeDie, time.Now())
 				philoDead = true
 				philos[i].log("died")
 				philos[i].mu.Unlock()
@@ -98,8 +97,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Config: %+v\n", *config)
-
 
 	forks := make([]*Fork, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
@@ -108,8 +105,6 @@ func main() {
 
 	dinnerEnd, philoDead = false, false
 	startTime = time.Now()
-	//fmt.Printf("Dinner starts at: %v\n", startTime)
-
 
 	philos := make([]*Philo, config.numPhilos)
 	for i := 0; i < config.numPhilos; i++ {
@@ -119,12 +114,11 @@ func main() {
 			personalTimeDie: startTime.Add(time.Duration(config.timeDie) * time.Millisecond),
 			mealsEaten: 0,
 			satisfied: false}
-		//fmt.Printf("Philo %d initial personalTimeDie: %v\n", philos[i].id, philos[i].personalTimeDie)
 		go philos[i].dine()
-		time.Sleep(time.Millisecond) // delay next philo goroutine shortly to mitigate each philo holding on to its own fork (deadlock)
+		time.Sleep(time.Millisecond) // delay next philo goroutine shortly to mitigate each philo holding onto its own fork (deadlock)
 	}
 
 	monitor(philos)
 
-	//select {} // keep main goroutine alive without monitor as otherwise philos' goroutines terminate with it
+	//select {} // only necessary for testing when we want to keep the main alive without a monitor as otherwise the philo goroutines exit with the main
 }
