@@ -10,6 +10,7 @@ This project is my first attempt at using Go. It builds on what I learned from t
 - [Installation and Usage](#installation-and-usage)
 	- [Clone the Repository and Compile the Code](#clone-the-repository-and-compile-the-code)
 	- [Run an Example](#run-an-example)
+- [Comparing Go and C](#comparing-go-and-c)
 - [Sources](#sources)
 
 ## Overview
@@ -118,7 +119,7 @@ This output can be [visualized](https://nafuka11.github.io/philosophers-visualiz
 
 After each philosopher has eaten three times, the dinner ends and the program stops executing.
 
-## Comparison to solution in C
+## Comparing Go and C
 - **Memory Management**: Go's garbage collection is more convenient, though it offers less control compared to manual memory management in C.
 - **Concurrency**: Go's goroutines are more convenient and easier to use than threads in C.
 - **Sleep Function**: The standard sleep function in Go (`time.Sleep`) seems to be less precise than the standard `usleep function in C.
